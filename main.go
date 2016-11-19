@@ -6,12 +6,12 @@ import (
 )
 
 func main() {
-	j := make([]sources.Job, 0)
+	jobs := make([]sources.Job, 0)
 	for _, s := range sources.All() {
-		j = append(j, s.SearchFor("php")...)
+		jobs = append(jobs, sources.SearchFor("php", s)...)
 	}
 
-	for k, v := range j {
+	for k, v := range jobs {
 		fmt.Println(k, v.Title, v.Url)
 	}
 }
