@@ -4,18 +4,7 @@ import (
 	"github.com/yhat/scrape"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
-	"net/http"
 )
-
-type Job struct {
-	Title string
-	Url   string
-}
-
-type Source interface {
-	QueryUrl(tag string) string
-	Matcher() func(n *html.Node) bool
-}
 
 type BerlinStartupJobs struct {
 	url string
@@ -33,9 +22,22 @@ func (s BerlinStartupJobs) Matcher() func(n *html.Node) bool {
 	}
 	return matcher
 }
+func (s BerlinStartupJobs) Jobs(root *html.Node) []Job {
+	jobs := make([]Job, 0)
+	titles := scrape.FindAll(root, s.Matcher())
+	for _, title := range titles {
+		jobs = append(jobs, Job{Title: scrape.Text(title), Url: scrape.Attr(title, "href")})
+	}
+
+	return jobs
+}
 
 type StackOverflow struct {
 	url string
+}
+
+func (w StackOverflow) QueryUrl(tag string) string {
+	return w.url + "/jobs?sort=p&q=" + tag + "&l=Berlin%2C+Germany&d=100&u=Km"
 }
 
 func (s StackOverflow) Matcher() func(n *html.Node) bool {
@@ -47,35 +49,13 @@ func (s StackOverflow) Matcher() func(n *html.Node) bool {
 	}
 	return matcher
 }
-func (w StackOverflow) QueryUrl(tag string) string {
-	return w.url + "/jobs?sort=p&q=" + tag + "&l=Berlin%2C+Germany&d=100&u=Km"
-}
 
-//Search for a tag in a Source
-func SearchFor(tag string, s Source) []Job {
-	resp, err := http.Get(s.QueryUrl(tag))
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-
-	root, err := html.Parse(resp.Body)
-	if err != nil {
-		panic(err)
-	}
+func (s StackOverflow) Jobs(root *html.Node) []Job {
 	jobs := make([]Job, 0)
-	articles := scrape.FindAll(root, s.Matcher())
-	for _, article := range articles {
-		jobs = append(jobs, Job{Title: scrape.Text(article), Url: scrape.Attr(article, "href")})
+	titles := scrape.FindAll(root, s.Matcher())
+	for _, title := range titles {
+		jobs = append(jobs, Job{Title: scrape.Text(title), Url: s.url + scrape.Attr(title, "href")})
 	}
 
 	return jobs
-}
-
-//Get all available sources
-func All() []Source {
-	s := make([]Source, 0)
-	s = append(s, BerlinStartupJobs{"http://berlinstartupjobs.com"})
-	s = append(s, StackOverflow{"http://stackoverflow.com"})
-	return s
 }
