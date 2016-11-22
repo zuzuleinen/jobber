@@ -2,10 +2,12 @@ package commands
 
 import (
 	"fmt"
+	"bufio"
+	"os"
 )
 
 func SaveData() {
-	var email, prompt string
+	var email string
 
 	fmt.Println("Welcome to jobber, your simple toolkit to find jobs!")
 	fmt.Println("But first, let's find out more about you :)")
@@ -14,11 +16,13 @@ func SaveData() {
 	fmt.Println("Cool, your e-mail is", email)
 
 	interests := make([]string, 1)
-	for prompt != "." {
+	r := bufio.NewReader(os.Stdin)
+	for true {
 		fmt.Print("Give me an interest:")
-		fmt.Scan(&prompt)
-		if prompt != "." {
-			interests = append(interests, prompt)
+		t, _, _ := r.ReadLine()
+		interests = append(interests, string(t))
+		if len(t) == 0 {
+			break;
 		}
 	}
 	fmt.Println(interests)
