@@ -2,10 +2,21 @@ package main
 
 import (
 	"fmt"
+	"github.com/zuzuleinen/jobber/commands"
 	"github.com/zuzuleinen/jobber/sources"
+	"os"
 )
 
 func main() {
+	if len(os.Args) > 1 {
+		command := os.Args[1]
+		if command == "init" {
+			commands.SaveData()
+		}
+	}
+}
+
+func searchForJobs() {
 	topics := make([]string, 2)
 	topics = append(topics, "php", "golang")
 
