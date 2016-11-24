@@ -3,19 +3,36 @@ package main
 import (
 	_ "github.com/mattn/go-sqlite3"
 	"fmt"
+	"github.com/zuzuleinen/jobber/commands"
 	"github.com/zuzuleinen/jobber/sources"
 	"github.com/zuzuleinen/jobber/database"
+	"os"
 )
+
+
 
 func main() {
 	db := database.Connect()
 	defer db.Close()
 
-	jobs := make([]sources.Job, 0)
-	for _, s := range sources.All() {
-		jobs = append(jobs, sources.SearchFor("php", s)...)
+	if len(os.Args) > 1 {
+		command := os.Args[1]
+		if command == "init" {
+			commands.SaveData()
+		}
 	}
+}
 
+func searchForJobs() {
+	topics := make([]string, 2)
+	topics = append(topics, "php", "golang")
+
+	jobs := make([]sources.Job, 0)
+	for _, topic := range topics {
+		for _, s := range sources.All() {
+			jobs = append(jobs, sources.SearchFor(topic, s)...)
+		}
+	}
 	for k, v := range jobs {
 		fmt.Println(k, v.Title, v.Url)
 	}
