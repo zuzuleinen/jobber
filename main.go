@@ -16,8 +16,9 @@ func main() {
 
 	if len(os.Args) > 1 {
 		if os.Args[1] == "init" {
-			commands.SaveData()
 			database.CreateJobsTable(db)
+			database.CreateUserTable(db)
+			commands.SaveData(db)
 		}
 	} else {
 		searchForJobs(db)
