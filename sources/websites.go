@@ -22,11 +22,11 @@ func (s BerlinStartupJobs) Matcher() func(n *html.Node) bool {
 	}
 	return matcher
 }
-func (s BerlinStartupJobs) Jobs(root *html.Node) []Job {
+func (s BerlinStartupJobs) Jobs(root *html.Node, tag string) []Job {
 	jobs := make([]Job, 0)
 	titles := scrape.FindAll(root, s.Matcher())
 	for _, title := range titles {
-		jobs = append(jobs, Job{Title: scrape.Text(title), Url: scrape.Attr(title, "href")})
+		jobs = append(jobs, Job{Title: scrape.Text(title), Url: scrape.Attr(title, "href"), Tag: tag})
 	}
 
 	return jobs
@@ -50,11 +50,11 @@ func (s StackOverflow) Matcher() func(n *html.Node) bool {
 	return matcher
 }
 
-func (s StackOverflow) Jobs(root *html.Node) []Job {
+func (s StackOverflow) Jobs(root *html.Node, tag string) []Job {
 	jobs := make([]Job, 0)
 	titles := scrape.FindAll(root, s.Matcher())
 	for _, title := range titles {
-		jobs = append(jobs, Job{Title: scrape.Text(title), Url: s.url + scrape.Attr(title, "href")})
+		jobs = append(jobs, Job{Title: scrape.Text(title), Url: s.url + scrape.Attr(title, "href"), Tag: tag})
 	}
 
 	return jobs

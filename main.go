@@ -21,10 +21,11 @@ func main() {
 			commands.SaveData()
 		}
 	}
+	searchForJobs()
 }
 
 func searchForJobs() {
-	topics := make([]string, 2)
+	topics := make([]string, 0)
 	topics = append(topics, "php", "golang")
 
 	jobs := make([]sources.Job, 0)
@@ -33,7 +34,7 @@ func searchForJobs() {
 			jobs = append(jobs, sources.SearchFor(topic, s)...)
 		}
 	}
-	for k, v := range jobs {
-		fmt.Println(k, v.Title, v.Url)
+	for _, j := range jobs {
+		fmt.Println(j.Tag, ":", j.Title, j.Url)
 	}
 }

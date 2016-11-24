@@ -8,6 +8,7 @@ import (
 type Job struct {
 	Title string
 	Url   string
+	Tag   string
 }
 
 //Search for jobs related to tag in a Source
@@ -22,5 +23,5 @@ func SearchFor(tag string, s Source) []Job {
 	if err != nil {
 		panic(err)
 	}
-	return s.Jobs(root)
+	return s.Jobs(root, tag)
 }

@@ -5,7 +5,7 @@ import "golang.org/x/net/html"
 type Source interface {
 	QueryUrl(tag string) string
 	Matcher() func(n *html.Node) bool
-	Jobs(root *html.Node) []Job
+	Jobs(root *html.Node, tag string) []Job
 }
 
 //Get all available sources
