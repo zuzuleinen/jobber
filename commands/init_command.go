@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"fmt"
 	"bufio"
+	"fmt"
 	"os"
 )
 
@@ -22,7 +22,7 @@ func SaveData() {
 		t, _, _ := r.ReadLine()
 		interests = append(interests, string(t))
 		if len(t) == 0 {
-			break;
+			break
 		}
 	}
 	fmt.Println(interests)
