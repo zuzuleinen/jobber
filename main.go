@@ -6,6 +6,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/zuzuleinen/jobber/commands"
 	"github.com/zuzuleinen/jobber/database"
+	"github.com/zuzuleinen/jobber/email"
 	"github.com/zuzuleinen/jobber/sources"
 	"os"
 )
@@ -38,5 +39,17 @@ func searchForJobs(db *sql.DB) {
 	for _, j := range jobs {
 		fmt.Println(j.Tag, ":", j.Title, j.Url)
 	}
+	sendJobs(jobs)
 	database.Save(db, jobs)
+}
+
+func sendJobs(jobs []sources.Job) {
+	var body string
+
+	body = "Hey, <strong>jobber</strong> found new jobs for you <br />"
+
+	for _, j := range jobs {
+		body += fmt.Sprintf("<a href=\"%s\">%s</a>", j.Url, j.Title)
+	}
+	email.Send("andrey.boar@gmail.com", "New jobs from jobber", body)
 }
