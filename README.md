@@ -2,11 +2,12 @@
 
 ## About
 
-**jobber** is a CLI tool for searching tech jobs in Berlin area. So far it searches a job 
-based on your terms on [StackOverflow](http://stackoverflow.com/) and [berlinstartupjobs.com](http://berlinstartupjobs.com/)
-This tool is currently work in progress and just a way for me to learn Go.
+**jobber** is a CLI tool for searching tech jobs in Berlin area. 
 
-When the project is finished, I will update this file with instructions to set-up the tool.
+## How will it work
+After install, the tool will search for jobs on [StackOverflow](http://stackoverflow.com/) and [berlinstartupjobs.com](http://berlinstartupjobs.com/) based on your preferences. Once it finds a new job it will send it to your email.
+
+Instructions for installing the tool will come once the project is completed(end of December).
 
 ## Questions
 Feel free to write me at andrey.boar[at]gmail.com
