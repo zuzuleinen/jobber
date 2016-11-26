@@ -9,6 +9,7 @@ type Job struct {
 	Title string
 	Url   string
 	Tag   string
+	DateAdded string
 }
 
 //Search for jobs related to tag in a Source
