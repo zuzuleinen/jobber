@@ -5,20 +5,27 @@ import (
 	"github.com/zuzuleinen/jobber/commands"
 	"github.com/zuzuleinen/jobber/database"
 	"os"
+	"fmt"
 )
 
 func main() {
 	db := database.Connect()
 	defer db.Close()
 
-	if len(os.Args) > 1 {
-		if os.Args[1] == "init" {
-			database.CreateJobsTable(db)
-			database.CreateUserTable(db)
-			commands.SaveData(db)
-		}
-		if os.Args[1] == "search" {
-			commands.SearchJobs()
-		}
+	if len(os.Args) < 2 {
+		fmt.Println("Use `init` or `search` commands.")
+		return
+	}
+
+	command := os.Args[1]
+	switch command {
+	case "init":
+		database.CreateJobsTable(db)
+		database.CreateUserTable(db)
+		database.CreateJobHistoryTable(db)
+		commands.SaveData(db)
+		break
+	case "search":
+		commands.SearchJobs(db)
 	}
 }

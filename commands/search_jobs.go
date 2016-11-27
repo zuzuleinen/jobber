@@ -4,14 +4,19 @@ import (
 	"fmt"
 	"github.com/zuzuleinen/jobber/sources"
 	"github.com/zuzuleinen/jobber/email"
+	"database/sql"
+	"github.com/zuzuleinen/jobber/database"
 )
 
-func SearchJobs() {
-	topics := make([]string, 0)
-	topics = append(topics, "php")
+func SearchJobs(db *sql.DB) {
+	u, err := database.FindUser(db)
+
+	if err != nil {
+		panic(err)
+	}
 
 	jobs := make([]sources.Job, 0)
-	for _, topic := range topics {
+	for _, topic := range u.Tags() {
 		for _, s := range sources.All() {
 			jobs = append(jobs, sources.SearchFor(topic, s)...)
 		}
