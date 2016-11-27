@@ -10,6 +10,9 @@ type BerlinStartupJobs struct {
 	url string
 }
 
+func (w BerlinStartupJobs) Name() string {
+	return "berlinstartupjobs"
+}
 func (w BerlinStartupJobs) QueryUrl(tag string) string {
 	return w.url + "/?s=" + tag
 }
@@ -27,7 +30,15 @@ func (s BerlinStartupJobs) Jobs(root *html.Node, tag string) []Job {
 	titles := scrape.FindAll(root, s.Matcher())
 	for _, title := range titles {
 		dateAdded := scrape.Text(title.Parent.NextSibling.NextSibling.NextSibling.NextSibling)
-		jobs = append(jobs, Job{Title: scrape.Text(title), Url: scrape.Attr(title, "href"), Tag: tag, DateAdded:dateAdded})
+		jobs = append(
+			jobs,
+			Job{
+				Title: scrape.Text(title),
+				Url: scrape.Attr(title, "href"),
+				Tag: tag,
+				DateAdded:dateAdded,
+			},
+		)
 	}
 
 	return jobs
@@ -37,10 +48,12 @@ type StackOverflow struct {
 	url string
 }
 
+func (w StackOverflow) Name() string {
+	return "stackoverflow"
+}
 func (w StackOverflow) QueryUrl(tag string) string {
 	return w.url + "/jobs?sort=p&q=" + tag + "&l=Berlin%2C+Germany&d=100&u=Km"
 }
-
 func (s StackOverflow) Matcher() func(n *html.Node) bool {
 	matcher := func(n *html.Node) bool {
 		if n.DataAtom == atom.A && n.Parent != nil && n.Parent.Parent != nil && scrape.Attr(n.Parent, "class") != "pagination" {
@@ -67,7 +80,15 @@ func (s StackOverflow) Jobs(root *html.Node, tag string) []Job {
 			NextSibling.
 			NextSibling.
 			NextSibling
-		jobs = append(jobs, Job{Title: scrape.Text(title), Url: s.url + scrape.Attr(title, "href"), Tag: tag, DateAdded:scrape.Text(dateNode)})
+		jobs = append(
+			jobs,
+			Job{
+				Title: scrape.Text(title),
+				Url: s.url + scrape.Attr(title, "href"),
+				Tag: tag,
+				DateAdded:scrape.Text(dateNode),
+			},
+		)
 	}
 
 	return jobs

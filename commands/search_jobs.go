@@ -10,20 +10,42 @@ import (
 
 func SearchJobs(db *sql.DB) {
 	u, err := database.FindUser(db)
+	debug := true
 
 	if err != nil {
 		panic(err)
 	}
 
 	jobs := make([]sources.Job, 0)
-	for _, topic := range u.Tags() {
-		for _, s := range sources.All() {
-			jobs = append(jobs, sources.SearchFor(topic, s)...)
+	histories := make([]database.JobHistory, 0)
+	for _, s := range sources.All() {
+		for _, tag := range u.Tags() {
+			h := database.JobHistory{SourceName:s.Name(), Tag:tag}
+
+			searchedJobs := sources.SearchFor(tag, s)
+			jobs = append(jobs, searchedJobs...)
+
+			h.MostRecent = searchedJobs[0]
+			histories = append(histories, h)
 		}
 	}
-	for _, j := range jobs {
-		fmt.Println(j.Tag, ":", j.Title, j.Url, ":", j.DateAdded)
+
+	//todo update history if exists
+	//todo standard format for db last date
+	//todo deal with stackoverflow date
+	//todo send jobs to e-mail
+	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, heiword in text)
+	//todo check why jobs from stack overflow are not ordered
+
+	if debug {
+		for _, j := range jobs {
+			fmt.Println(j.Tag, ":", j.Title, j.Url, ":", j.DateAdded)
+		}
+		fmt.Println("-----------------------")
+		fmt.Println(histories)
 	}
+
+	database.SaveHistories(db, histories)
 
 	//foreach term
 	//	drop jobs with dateAdded < last date added
