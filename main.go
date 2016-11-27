@@ -1,11 +1,11 @@
 package main
 
 import (
+	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/zuzuleinen/jobber/commands"
 	"github.com/zuzuleinen/jobber/database"
 	"os"
-	"fmt"
 )
 
 func main() {

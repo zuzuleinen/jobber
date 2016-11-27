@@ -1,16 +1,16 @@
 package commands
 
 import (
-	"fmt"
-	"github.com/zuzuleinen/jobber/sources"
-	"github.com/zuzuleinen/jobber/email"
 	"database/sql"
+	"fmt"
 	"github.com/zuzuleinen/jobber/database"
+	"github.com/zuzuleinen/jobber/email"
+	"github.com/zuzuleinen/jobber/sources"
 )
 
 func SearchJobs(db *sql.DB) {
 	u, err := database.FindUser(db)
-	debug := true
+	debug := false
 
 	if err != nil {
 		panic(err)
@@ -20,7 +20,7 @@ func SearchJobs(db *sql.DB) {
 	histories := make([]database.JobHistory, 0)
 	for _, s := range sources.All() {
 		for _, tag := range u.Tags() {
-			h := database.JobHistory{SourceName:s.Name(), Tag:tag}
+			h := database.JobHistory{SourceName: s.Name(), Tag: tag}
 
 			searchedJobs := sources.SearchFor(tag, s)
 			jobs = append(jobs, searchedJobs...)
@@ -30,7 +30,6 @@ func SearchJobs(db *sql.DB) {
 		}
 	}
 
-	//todo update history if exists
 	//todo standard format for db last date
 	//todo deal with stackoverflow date
 	//todo send jobs to e-mail
@@ -45,7 +44,9 @@ func SearchJobs(db *sql.DB) {
 		fmt.Println(histories)
 	}
 
-	database.SaveHistories(db, histories)
+	for _, h := range histories {
+		database.InsertOrUpdate(db, h)
+	}
 
 	//foreach term
 	//	drop jobs with dateAdded < last date added

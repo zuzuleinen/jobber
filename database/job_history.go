@@ -20,10 +20,26 @@ func CreateJobHistoryTable(db *sql.DB) {
 	}
 }
 
-func SaveHistories(db *sql.DB, histories []JobHistory) {
-	sql_additem := `INSERT INTO job_history(SourceName,Tag,LastDateAdded, LastTitle) values(?,?,?,?);`
+func InsertOrUpdate(db *sql.DB, j JobHistory) {
+	sql_select := `SELECT * FROM job_history WHERE SourceName = ? AND Tag = ?`
 
-	stmt, err := db.Prepare(sql_additem)
+	rows, err := db.Query(sql_select, j.SourceName, j.Tag)
+	if err != nil {
+		panic(err)
+	}
+
+	if !rows.Next() {
+		InsertHistories(db, []JobHistory{j})
+	} else {
+		rows.Close()
+		Update(db, j)
+	}
+}
+
+func InsertHistories(db *sql.DB, histories []JobHistory) {
+	sql_insert := `INSERT INTO job_history(SourceName,Tag,LastDateAdded, LastTitle) values(?,?,?,?);`
+
+	stmt, err := db.Prepare(sql_insert)
 	if err != nil {
 		panic(err)
 	}
@@ -37,24 +53,20 @@ func SaveHistories(db *sql.DB, histories []JobHistory) {
 	}
 }
 
-func Histories(db *sql.DB) []JobHistory {
-	sql_readAll := `SELECT SourceName, Tag, LastDateAdded, LastTitle FROM job_history;`
+//Update job_history.LastTitle and job_history.LastDateAdded by SourceName and Tag
+func Update(db *sql.DB, j JobHistory) {
+	sql_update := `UPDATE job_history
+	SET LastTitle = ?, LastDateAdded = ?
+	WHERE SourceName = ? AND Tag = ?;`
 
-	rows, err := db.Query(sql_readAll)
+	stmt, err := db.Prepare(sql_update)
 	if err != nil {
 		panic(err)
 	}
-	defer rows.Close()
+	defer stmt.Close()
 
-	var result []JobHistory
-	for rows.Next() {
-		item := JobHistory{}
-		err2 := rows.Scan(&item.SourceName, &item.MostRecent.Tag, &item.MostRecent.Title, &item.MostRecent.DateAdded)
-		if err2 != nil {
-			panic(err2)
-		}
-		result = append(result, item)
+	_, err2 := stmt.Exec(j.MostRecent.Title, j.MostRecent.DateAdded, j.SourceName, j.Tag)
+	if err2 != nil {
+		panic(err2)
 	}
-	return result
 }
-

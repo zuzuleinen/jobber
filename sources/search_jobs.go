@@ -6,9 +6,9 @@ import (
 )
 
 type Job struct {
-	Title string
-	Url   string
-	Tag   string
+	Title     string
+	Url       string
+	Tag       string
 	DateAdded string
 }
 

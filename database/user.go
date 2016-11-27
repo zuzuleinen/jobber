@@ -16,7 +16,7 @@ var ErrUserNotFound = errors.New("No user was found in the database.")
 //Get the user of the application
 func FindUser(db *sql.DB) (*User, error) {
 	users := Users(db)
-	if (len(users) < 1) {
+	if len(users) < 1 {
 		return new(User), ErrUserNotFound
 	}
 	return &users[0], nil

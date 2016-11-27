@@ -33,10 +33,10 @@ func (s BerlinStartupJobs) Jobs(root *html.Node, tag string) []Job {
 		jobs = append(
 			jobs,
 			Job{
-				Title: scrape.Text(title),
-				Url: scrape.Attr(title, "href"),
-				Tag: tag,
-				DateAdded:dateAdded,
+				Title:     scrape.Text(title),
+				Url:       scrape.Attr(title, "href"),
+				Tag:       tag,
+				DateAdded: dateAdded,
 			},
 		)
 	}
@@ -69,7 +69,7 @@ func (s StackOverflow) Jobs(root *html.Node, tag string) []Job {
 	titles := scrape.FindAll(root, s.Matcher())
 	for _, title := range titles {
 		dateNode := title.
-		Parent.
+			Parent.
 			Parent.
 			NextSibling.
 			NextSibling.
@@ -83,10 +83,10 @@ func (s StackOverflow) Jobs(root *html.Node, tag string) []Job {
 		jobs = append(
 			jobs,
 			Job{
-				Title: scrape.Text(title),
-				Url: s.url + scrape.Attr(title, "href"),
-				Tag: tag,
-				DateAdded:scrape.Text(dateNode),
+				Title:     scrape.Text(title),
+				Url:       s.url + scrape.Attr(title, "href"),
+				Tag:       tag,
+				DateAdded: scrape.Text(dateNode),
 			},
 		)
 	}
