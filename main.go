@@ -6,7 +6,6 @@ import (
 	"github.com/zuzuleinen/jobber/commands"
 	"github.com/zuzuleinen/jobber/database"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -29,18 +28,4 @@ func main() {
 	case "search":
 		commands.SearchJobs(db)
 	}
-}
-
-func ParseTime(d string) string {
-	if strings.Contains(d, "hours") {
-		d = strings.Replace(d, "hours", "h", -1)
-	}
-	if strings.Contains(d, "hour") {
-		d = strings.Replace(d, "hour", "h", -1)
-	}
-	d = strings.Replace(d, "ago", "", -1)
-	d = strings.Replace(d, " ", "", -1)
-	d = strings.Replace(d, "<", "", -1)
-	d = "-" + d
-	return d
 }

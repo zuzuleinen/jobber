@@ -5,7 +5,16 @@ import (
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 	"time"
+	"strings"
+	"strconv"
 )
+
+type Source interface {
+	Name() string
+	QueryUrl(tag string) string
+	Matcher() func(n *html.Node) bool
+	Jobs(root *html.Node, tag string) []Job
+}
 
 type BerlinStartupJobs struct {
 	url string
@@ -32,9 +41,11 @@ func (s BerlinStartupJobs) Jobs(root *html.Node, tag string) []Job {
 	for _, title := range titles {
 		dateAdded := scrape.Text(title.Parent.NextSibling.NextSibling.NextSibling.NextSibling)
 		t, err := time.Parse("January 2, 2006", dateAdded)
-		if (err != nil) {
+
+		if err != nil {
 			panic(err)
 		}
+
 		jobs = append(
 			jobs,
 			Job{
@@ -62,7 +73,13 @@ func (w StackOverflow) QueryUrl(tag string) string {
 func (s StackOverflow) Matcher() func(n *html.Node) bool {
 	matcher := func(n *html.Node) bool {
 		if n.DataAtom == atom.A && n.Parent != nil && n.Parent.Parent != nil && scrape.Attr(n.Parent, "class") != "pagination" {
-			return scrape.Attr(n, "class") == "job-link"
+			if scrape.Attr(n, "class") == "job-link" {
+				//remove featured jobs since they are not sorted by date
+				if strings.Contains(scrape.Attr(n.Parent.Parent.Parent, "class"), "highlighted") {
+					return false
+				}
+				return true
+			}
 		}
 		return false
 	}
@@ -74,7 +91,7 @@ func (s StackOverflow) Jobs(root *html.Node, tag string) []Job {
 	titles := scrape.FindAll(root, s.Matcher())
 	for _, title := range titles {
 		dateNode := title.
-			Parent.
+		Parent.
 			Parent.
 			NextSibling.
 			NextSibling.
@@ -85,16 +102,57 @@ func (s StackOverflow) Jobs(root *html.Node, tag string) []Job {
 			NextSibling.
 			NextSibling.
 			NextSibling
+
+		t := time.Now()
+		duration, err := time.ParseDuration(s.FormatDate(scrape.Text(dateNode)))
+
+		if err != nil {
+			panic(err)
+		}
+
 		jobs = append(
 			jobs,
 			Job{
 				Title:     scrape.Text(title),
 				Url:       s.url + scrape.Attr(title, "href"),
 				Tag:       tag,
-				DateAdded: scrape.Text(dateNode),
+				DateAdded: t.Add(duration).Format(time.RFC822),
 			},
 		)
 	}
 
 	return jobs
+}
+
+func (s StackOverflow) FormatDate(dateAdded string) string {
+	if strings.Contains(dateAdded, "hours") {
+		dateAdded = strings.Replace(dateAdded, "hours", "h", -1)
+	}
+	if strings.Contains(dateAdded, "hour") {
+		dateAdded = strings.Replace(dateAdded, "hour", "h", -1)
+	}
+	if strings.Contains(dateAdded, "yesterday") {
+		dateAdded = strings.Replace(dateAdded, "yesterday", "24h", -1)
+	}
+	if strings.Contains(dateAdded, "days") || strings.Contains(dateAdded, "week") {
+		elements := strings.Split(dateAdded, " ")
+
+		counter, _ := strconv.Atoi(elements[0])
+		unit := elements[1]
+
+		hours := 0
+		if strings.Contains(unit, "day") {
+			hours = counter * 24
+		}
+		if strings.Contains(unit, "week") {
+			hours = counter * 7 * 24
+		}
+		dateAdded = strconv.Itoa(hours) + "h"
+	}
+	dateAdded = strings.Replace(dateAdded, "ago", "", -1)
+	dateAdded = strings.Replace(dateAdded, " ", "", -1)
+	dateAdded = strings.Replace(dateAdded, "<", "", -1)
+	durationString := "-" + dateAdded
+
+	return durationString
 }
