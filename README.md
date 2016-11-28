@@ -1,5 +1,16 @@
 # jobber
 
+                                          _       _     _               
+                                          (_)     | |   | |              
+                                           _  ___ | |__ | |__   ___ _ __ 
+                                          | |/ _ \| '_ \| '_ \ / _ \ '__|
+                                          | | (_) | |_) | |_) |  __/ |   
+                                          | |\___/|_.__/|_.__/ \___|_|   
+                                         _/ |                            
+                                        |__/                             
+
+
+
 ## About
 
 **jobber** is a CLI tool for searching tech jobs in Berlin area. Stop browsing and let jobber do the work for you.
