@@ -25,6 +25,10 @@ func SearchJobs(db *sql.DB) {
 			searchedJobs := sources.SearchFor(tag, s)
 			jobs = append(jobs, searchedJobs...)
 
+			if len(searchedJobs) == 0 {
+				continue
+			}
+
 			h.MostRecent = searchedJobs[0]
 			histories = append(histories, h)
 		}

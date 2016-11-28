@@ -19,19 +19,24 @@ func main() {
 
 	command := os.Args[1]
 	switch command {
-	case "init":
-		err := os.Remove(database.DbPath())
-
-		if err != nil {
-			panic(err)
-		}
-
+	case "install":
+		removeDatabase()
 		database.CreateJobsTable(db)
 		database.CreateUserTable(db)
 		database.CreateJobHistoryTable(db)
 		commands.SaveData(db)
 		break
+	case "uninstall":
+		removeDatabase()
+		break
 	case "search":
 		commands.SearchJobs(db)
+	}
+}
+
+func removeDatabase() {
+	err := os.Remove(database.DbPath())
+	if err != nil {
+		panic(err)
 	}
 }
