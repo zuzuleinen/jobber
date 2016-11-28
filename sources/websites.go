@@ -4,6 +4,7 @@ import (
 	"github.com/yhat/scrape"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
+	"time"
 )
 
 type BerlinStartupJobs struct {
@@ -30,13 +31,17 @@ func (s BerlinStartupJobs) Jobs(root *html.Node, tag string) []Job {
 	titles := scrape.FindAll(root, s.Matcher())
 	for _, title := range titles {
 		dateAdded := scrape.Text(title.Parent.NextSibling.NextSibling.NextSibling.NextSibling)
+		t, err := time.Parse("January 2, 2006", dateAdded)
+		if (err != nil) {
+			panic(err)
+		}
 		jobs = append(
 			jobs,
 			Job{
 				Title:     scrape.Text(title),
 				Url:       scrape.Attr(title, "href"),
 				Tag:       tag,
-				DateAdded: dateAdded,
+				DateAdded: t.Format(time.RFC822),
 			},
 		)
 	}
