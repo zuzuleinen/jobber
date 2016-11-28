@@ -5,7 +5,7 @@ import (
 )
 
 func Connect() *sql.DB {
-	db, err := sql.Open("sqlite3", dbPath())
+	db, err := sql.Open("sqlite3", DbPath())
 	if err != nil {
 		panic(err.Error())
 	}

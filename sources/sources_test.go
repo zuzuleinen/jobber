@@ -1,8 +1,8 @@
 package sources
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestFormatDate(t *testing.T) {

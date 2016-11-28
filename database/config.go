@@ -7,7 +7,7 @@ import (
 
 const DB_FILE = "jobber.db"
 
-func dbPath() string {
+func DbPath() string {
 	homeDir, _ := homedir.Dir()
 	return homeDir + string(os.PathSeparator) + DB_FILE
 }

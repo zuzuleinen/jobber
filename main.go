@@ -20,6 +20,12 @@ func main() {
 	command := os.Args[1]
 	switch command {
 	case "init":
+		err := os.Remove(database.DbPath())
+
+		if err != nil {
+			panic(err)
+		}
+
 		database.CreateJobsTable(db)
 		database.CreateUserTable(db)
 		database.CreateJobHistoryTable(db)

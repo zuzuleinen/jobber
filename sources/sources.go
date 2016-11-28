@@ -4,9 +4,9 @@ import (
 	"github.com/yhat/scrape"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
-	"time"
-	"strings"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type Source interface {
@@ -91,7 +91,7 @@ func (s StackOverflow) Jobs(root *html.Node, tag string) []Job {
 	titles := scrape.FindAll(root, s.Matcher())
 	for _, title := range titles {
 		dateNode := title.
-		Parent.
+			Parent.
 			Parent.
 			NextSibling.
 			NextSibling.
