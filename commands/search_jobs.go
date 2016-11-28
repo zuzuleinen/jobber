@@ -30,11 +30,8 @@ func SearchJobs(db *sql.DB) {
 		}
 	}
 
-	//todo standard format for db last date
-	//todo deal with stackoverflow date
 	//todo send jobs to e-mail
 	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, heiword in text)
-	//todo check why jobs from stack overflow are not ordered
 
 	if debug {
 		for _, j := range jobs {
