@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/zuzuleinen/jobber/commands"
 	"github.com/zuzuleinen/jobber/database"
@@ -12,12 +11,11 @@ func main() {
 	db := database.Connect()
 	defer db.Close()
 
-	if len(os.Args) < 2 {
-		fmt.Println("Use `init` or `search` commands.")
-		return
+	command := "--help"
+	if len(os.Args) > 2 {
+		command = os.Args[1]
 	}
 
-	command := os.Args[1]
 	switch command {
 	case "install":
 		removeDatabase()
@@ -31,6 +29,11 @@ func main() {
 		break
 	case "search":
 		commands.SearchJobs(db)
+		break
+	case "--help", "-h":
+		commands.Help()
+	default:
+		commands.Help()
 	}
 }
 

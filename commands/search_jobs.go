@@ -88,7 +88,6 @@ func SearchJobs(db *sql.DB) {
 	}
 
 	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, keyword in text)
-	//todo write documentation
 	//todo final code review
 	//todo maybe add more than 1 row per source-tag in job_history
 	//todo search for remaining todos
