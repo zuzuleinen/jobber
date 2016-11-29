@@ -39,6 +39,7 @@ func SearchJobs(db *sql.DB) {
 	//todo limit to 10 jobs the search
 	//todo write documentation
 	//todo final code review
+	//todo maybe add more than 1 row per source-tag in job_history
 
 	if debug {
 		for _, j := range jobs {
