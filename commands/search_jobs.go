@@ -6,53 +6,76 @@ import (
 	"github.com/zuzuleinen/jobber/database"
 	"github.com/zuzuleinen/jobber/email"
 	"github.com/zuzuleinen/jobber/sources"
+	"time"
 )
 
 func SearchJobs(db *sql.DB) {
 	u, err := database.FindUser(db)
-	debug := false
 
 	if err != nil {
 		panic(err)
 	}
 
-	jobs := make([]sources.Job, 0)
-	histories := make([]database.JobHistory, 0)
+	var jobsToSend []sources.Job
 	for _, s := range sources.All() {
 		for _, tag := range u.Tags() {
-			h := database.JobHistory{SourceName: s.Name(), Tag: tag}
-
 			searchedJobs := sources.SearchFor(tag, s)
-			jobs = append(jobs, searchedJobs...)
 
 			if len(searchedJobs) == 0 {
 				continue
 			}
 
-			limitRes := searchedJobs[:10]
-			h.MostRecent = limitRes[0]
+			//get current histories
+			//todo fix issue inside this if
+			if history, ok := database.FindBySourceAndTag(db, s.Name(), tag); ok {
+				for _, j := range searchedJobs {
+					historyDate := history.MostRecent.DateAdded
+					historyTitle := history.MostRecent.Title
 
-			histories = append(histories, h)
+					historyTime, err := time.Parse("January 2, 2006", historyDate)
+					if err != nil {
+						panic(err)
+					}
+
+					jobTime, err := time.Parse("January 2, 2006", j.DateAdded)
+					if err != nil {
+						panic(err)
+					}
+
+					if jobTime.After(historyTime) {
+						jobsToSend = append(jobsToSend, j)
+					}
+
+					if jobTime.Equal(historyTime) && j.Title == historyTitle {
+						jobsToSend = append(jobsToSend, j)
+					}
+				}
+			} else {
+				jobsToSend = append(jobsToSend, searchedJobs...)
+			}
+
+
+			//lock to history
+			h := database.JobHistory{SourceName: s.Name(), Tag: tag}
+
+			h.MostRecent = jobsToSend[0]
+			database.InsertOrUpdate(db, h)
+
+			//send jobs
+			if len(jobsToSend) > 0 {
+				sendJobs(jobsToSend)
+			} else {
+				fmt.Println("No new jobs. Skip.")
+			}
 		}
 	}
 
-	//todo send jobs to e-mail
 	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, keyword in text)
 	//todo write documentation
 	//todo final code review
 	//todo maybe add more than 1 row per source-tag in job_history
-
-	if debug {
-		for _, j := range jobs {
-			fmt.Println(j.Tag, ":", j.Title, j.Url, ":", j.DateAdded)
-		}
-		fmt.Println("-----------------------")
-		fmt.Println(histories)
-	}
-
-	for _, h := range histories {
-		database.InsertOrUpdate(db, h)
-	}
+	//todo search for remaining todos
+	//todo check for _ errors
 
 	//foreach term
 	//	drop jobs with dateAdded < last date added
@@ -66,7 +89,7 @@ func sendJobs(jobs []sources.Job) {
 	body = "Hey, <strong>jobber</strong> found new jobs for you <br />"
 
 	for _, j := range jobs {
-		body += fmt.Sprintf("<a href=\"%s\">%s</a>", j.Url, j.Title)
+		body += fmt.Sprintf("<a href=\"%s\">%s</a><br />", j.Url, j.Title)
 	}
 	email.Send("andrey.boar@gmail.com", "New jobs from jobber", body)
 }

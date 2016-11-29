@@ -70,3 +70,26 @@ func Update(db *sql.DB, j JobHistory) {
 		panic(err2)
 	}
 }
+
+//todo fix this bool return
+func FindBySourceAndTag(db *sql.DB, sourceName string, tag string) (*JobHistory, bool) {
+	sql_select := `SELECT * FROM job_history WHERE SourceName = ? AND Tag = ?`
+
+	rows, err := db.Query(sql_select, sourceName, tag)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	j := new(JobHistory)
+	if rows.Next() {
+		//todo maybe instead having a full job we could just keep dateadded and title
+		err2 := rows.Scan(&j.SourceName, &j.Tag, &j.MostRecent.DateAdded, &j.MostRecent.Title)
+		if err2 != nil {
+			panic(err2)
+		}
+
+		return j, true
+	}
+	return new(JobHistory), false
+}
