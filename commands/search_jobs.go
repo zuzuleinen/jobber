@@ -7,7 +7,23 @@ import (
 	"github.com/zuzuleinen/jobber/email"
 	"github.com/zuzuleinen/jobber/sources"
 	"time"
+	"sort"
 )
+
+type ByDateDesc []sources.Job
+
+func (b ByDateDesc) Len() int {
+	return len(b)
+}
+func (b ByDateDesc) Less(i, j int) bool {
+	iTime, _ := time.Parse(time.RFC822, b[i].DateAdded)
+	jTime, _ := time.Parse(time.RFC822, b[j].DateAdded)
+
+	return iTime.After(jTime)
+}
+func (b ByDateDesc) Swap(i, j int) {
+	b[i], b[j] = b[j], b[i]
+}
 
 func SearchJobs(db *sql.DB) {
 	u, err := database.FindUser(db)
@@ -21,53 +37,65 @@ func SearchJobs(db *sql.DB) {
 		for _, tag := range u.Tags() {
 			searchedJobs := sources.SearchFor(tag, s)
 
+			if s.Name() == "berlinstartupjobs" {
+				sort.Sort(ByDateDesc(searchedJobs))
+			}
+
 			if len(searchedJobs) == 0 {
 				continue
 			}
 
 			//get current histories
-			//todo fix issue inside this if
 			if history, ok := database.FindBySourceAndTag(db, s.Name(), tag); ok {
 				for _, j := range searchedJobs {
 					historyDate := history.MostRecent.DateAdded
 					historyTitle := history.MostRecent.Title
 
-					historyTime, err := time.Parse("January 2, 2006", historyDate)
+					historyTime, err := time.Parse(time.RFC822, historyDate)
 					if err != nil {
 						panic(err)
 					}
 
-					jobTime, err := time.Parse("January 2, 2006", j.DateAdded)
+					jobTime, err := time.Parse(time.RFC822, j.DateAdded)
+
 					if err != nil {
 						panic(err)
 					}
 
-					if jobTime.After(historyTime) {
-						jobsToSend = append(jobsToSend, j)
+					if !jobTime.After(historyTime) {
+						continue
 					}
 
 					if jobTime.Equal(historyTime) && j.Title == historyTitle {
-						jobsToSend = append(jobsToSend, j)
+						continue
 					}
+
+					//todo check stack overflow jobs whats the matter
+					fmt.Println("Job got in ", s, tag, j.Title, j.DateAdded, j.Url)
+					fmt.Println(jobTime)
+					fmt.Println(historyTime)
+
+					jobsToSend = append(jobsToSend, j)
 				}
 			} else {
 				jobsToSend = append(jobsToSend, searchedJobs...)
 			}
 
-
 			//lock to history
+			fmt.Println("Locking to history", tag, s.Name(), searchedJobs[0].Title)
 			h := database.JobHistory{SourceName: s.Name(), Tag: tag}
 
-			h.MostRecent = jobsToSend[0]
+			h.MostRecent = searchedJobs[0]
 			database.InsertOrUpdate(db, h)
 
-			//send jobs
-			if len(jobsToSend) > 0 {
-				sendJobs(jobsToSend)
-			} else {
-				fmt.Println("No new jobs. Skip.")
-			}
 		}
+	}
+
+	if len(jobsToSend) > 0 {
+		fmt.Println(jobsToSend)
+		//sendJobs(jobsToSend)
+	} else {
+		fmt.Println("No new jobs. Skip.")
 	}
 
 	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, keyword in text)
