@@ -29,14 +29,15 @@ func SearchJobs(db *sql.DB) {
 				continue
 			}
 
-			h.MostRecent = searchedJobs[0]
+			limitRes := searchedJobs[:10]
+			h.MostRecent = limitRes[0]
+
 			histories = append(histories, h)
 		}
 	}
 
 	//todo send jobs to e-mail
 	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, keyword in text)
-	//todo limit to 10 jobs the search
 	//todo write documentation
 	//todo final code review
 	//todo maybe add more than 1 row per source-tag in job_history
