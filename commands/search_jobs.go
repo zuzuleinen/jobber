@@ -45,7 +45,7 @@ func SearchJobs(db *sql.DB) {
 				continue
 			}
 
-			//get current histories
+			//check against current lock job_history
 			if history, ok := database.FindBySourceAndTag(db, s.Name(), tag); ok {
 				for _, j := range searchedJobs {
 					historyDate := history.MostRecent.DateAdded
@@ -70,32 +70,21 @@ func SearchJobs(db *sql.DB) {
 						continue
 					}
 
-					//todo check stack overflow jobs whats the matter
-					fmt.Println("Job got in ", s, tag, j.Title, j.DateAdded, j.Url)
-					fmt.Println(jobTime)
-					fmt.Println(historyTime)
-
 					jobsToSend = append(jobsToSend, j)
 				}
 			} else {
 				jobsToSend = append(jobsToSend, searchedJobs...)
 			}
 
-			//lock to history
-			fmt.Println("Locking to history", tag, s.Name(), searchedJobs[0].Title)
+			//lock history
 			h := database.JobHistory{SourceName: s.Name(), Tag: tag}
-
 			h.MostRecent = searchedJobs[0]
 			database.InsertOrUpdate(db, h)
-
 		}
 	}
 
 	if len(jobsToSend) > 0 {
-		fmt.Println(jobsToSend)
-		//sendJobs(jobsToSend)
-	} else {
-		fmt.Println("No new jobs. Skip.")
+		sendJobs(jobsToSend)
 	}
 
 	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, keyword in text)

@@ -116,7 +116,7 @@ func (s StackOverflow) Jobs(root *html.Node, tag string) []Job {
 				Title:     scrape.Text(title),
 				Url:       s.url + scrape.Attr(title, "href"),
 				Tag:       tag,
-				DateAdded: t.Add(duration).Format(time.RFC822),
+				DateAdded: t.Add(duration).Format("02 Jan 06 00:00 MST"),
 			},
 		)
 	}
