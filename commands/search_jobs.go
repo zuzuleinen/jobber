@@ -87,6 +87,7 @@ func SearchJobs(db *sql.DB) {
 		sendJobs(jobsToSend)
 	}
 
+	//todo add table for mailgun data
 	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, keyword in text)
 	//todo final code review
 	//todo maybe add more than 1 row per source-tag in job_history
