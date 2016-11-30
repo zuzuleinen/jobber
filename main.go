@@ -12,7 +12,7 @@ func main() {
 	defer db.Close()
 
 	command := "--help"
-	if len(os.Args) > 2 {
+	if len(os.Args) > 1 {
 		command = os.Args[1]
 	}
 
