@@ -56,4 +56,4 @@ Options:
 
 
 ## Questions or suggestions
-If you encounter a problem feel free to [open](https://github.com/zuzuleinen/dave/issues/new) an issue.
+If you encounter a problem feel free to [open](https://github.com/zuzuleinen/dave/issues/new) an issue or send me an e-mail at andrey.boar[at]gmail.com
