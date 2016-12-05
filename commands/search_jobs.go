@@ -85,25 +85,21 @@ func SearchJobs(db *sql.DB) {
 
 	if len(jobsToSend) > 0 {
 		sendJobs(jobsToSend)
+	} else {
+		fmt.Println("no new jobs")
 	}
 
 	//todo add table for mailgun data
 	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, keyword in text)
 	//todo final code review
-	//todo maybe add more than 1 row per source-tag in job_history
 	//todo search for remaining todos
 	//todo check for _ errors
-
-	//foreach term
-	//	drop jobs with dateAdded < last date added
-	//	if date == last date added drop the one with the same name
-	// 	send all remaining
 }
 
 func sendJobs(jobs []sources.Job) {
 	var body string
 
-	body = "Hey, <strong>jobber</strong> found new jobs for you <br />"
+	body = "Hey, <strong>jobber</strong> found new jobs for you <br /><br />"
 
 	for _, j := range jobs {
 		body += fmt.Sprintf("<a href=\"%s\">%s</a><br />", j.Url, j.Title)
