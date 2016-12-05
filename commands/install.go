@@ -10,7 +10,12 @@ import (
 )
 
 func SaveData(db *sql.DB) {
-	var email, mailgunPubKey, mailgunPrivKey string
+	saveUserData(db)
+	saveMailgunData(db)
+}
+
+func saveUserData(db *sql.DB) {
+	var email string
 
 	fmt.Println("Welcome to jobber, your simple toolkit to find jobs!")
 	fmt.Println("But first, let's find out more about you :)")
@@ -33,12 +38,16 @@ func SaveData(db *sql.DB) {
 	u.Interests = strings.Join(interests, ",")
 
 	database.SaveUser(db, u)
+}
+
+func saveMailgunData(db *sql.DB) {
+	m := new(database.MailgunData)
 
 	fmt.Println("Almost done. I need your mailgun data")
 	fmt.Print("Public key:")
-	fmt.Scanln(&mailgunPubKey)
+	fmt.Scanln(&m.PubKey)
 	fmt.Print("Private key:")
-	fmt.Scanln(&mailgunPrivKey)
+	fmt.Scanln(&m.PrivKey)
 
-	fmt.Println(mailgunPubKey, mailgunPrivKey)
+	database.SaveMailgun(db, m)
 }

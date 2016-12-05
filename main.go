@@ -20,6 +20,7 @@ func main() {
 	case "install":
 		removeDatabase()
 		database.CreateUserTable(db)
+		database.CreateMailgunTable(db)
 		database.CreateJobHistoryTable(db)
 		commands.SaveData(db)
 		break
