@@ -19,7 +19,6 @@ func main() {
 	switch command {
 	case "install":
 		removeDatabase()
-		database.CreateJobsTable(db)
 		database.CreateUserTable(db)
 		database.CreateJobHistoryTable(db)
 		commands.SaveData(db)
