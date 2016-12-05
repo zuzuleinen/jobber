@@ -44,6 +44,8 @@ func saveMailgunData(db *sql.DB) {
 	m := new(database.MailgunData)
 
 	fmt.Println("Almost done. I need your mailgun data")
+	fmt.Print("Domain:")
+	fmt.Scanln(&m.Domain)
 	fmt.Print("Public key:")
 	fmt.Scanln(&m.PubKey)
 	fmt.Print("Private key:")
