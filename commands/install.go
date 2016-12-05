@@ -12,6 +12,8 @@ import (
 func SaveData(db *sql.DB) {
 	saveUserData(db)
 	saveMailgunData(db)
+
+	fmt.Println("All done!")
 }
 
 func saveUserData(db *sql.DB) {

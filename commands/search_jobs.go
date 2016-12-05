@@ -84,19 +84,18 @@ func SearchJobs(db *sql.DB) {
 	}
 
 	if len(jobsToSend) > 0 {
-		sendJobs(jobsToSend)
+		sendJobs(jobsToSend, db)
 	} else {
 		fmt.Println("no new jobs")
 	}
 
-	//todo add table for mailgun data
 	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, keyword in text)
 	//todo final code review
 	//todo search for remaining todos
 	//todo check for _ errors
 }
 
-func sendJobs(jobs []sources.Job) {
+func sendJobs(jobs []sources.Job, db *sql.DB) {
 	var body string
 
 	body = "Hey, <strong>jobber</strong> found new jobs for you <br /><br />"
@@ -104,5 +103,8 @@ func sendJobs(jobs []sources.Job) {
 	for _, j := range jobs {
 		body += fmt.Sprintf("<a href=\"%s\">%s</a><br />", j.Url, j.Title)
 	}
-	email.Send("andrey.boar@gmail.com", "New jobs from jobber", body)
+
+	u, _ := database.FindUser(db)
+
+	email.Send(u.Email, "New jobs from jobber", body, db)
 }

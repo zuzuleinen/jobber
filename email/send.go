@@ -2,13 +2,14 @@ package email
 
 import (
 	"github.com/mailgun/mailgun-go"
-	"github.com/zuzuleinen/dave/config"
+	"github.com/zuzuleinen/jobber/config"
 	"log"
+	"database/sql"
 )
 
 //Sends an HTML body e-mail
-func Send(from, subject, body string) {
-	mailGunConfig := config.Config()
+func Send(from, subject, body string, db *sql.DB) {
+	mailGunConfig := config.Config(db)
 
 	mg := mailgun.NewMailgun(
 		mailGunConfig.Domain,
@@ -16,7 +17,7 @@ func Send(from, subject, body string) {
 		mailGunConfig.PublicApiKey,
 	)
 
-	m := mg.NewMessage(from, subject, "", config.YourEmail())
+	m := mg.NewMessage(from, subject, "", from)
 	m.SetHtml(body)
 
 	_, _, err := mg.Send(m)
