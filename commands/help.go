@@ -9,7 +9,7 @@ Usage:
 
 List of commands:
   install:        Interactive project install
-  uninstall:      Remove sqlite database from homer directory
+  uninstall:      Remove sqlite database from home directory
   search:         Search for new jobs and send e-mail if any
 
 
