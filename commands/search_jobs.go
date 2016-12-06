@@ -89,10 +89,9 @@ func SearchJobs(db *sql.DB) {
 		fmt.Println("no new jobs")
 	}
 
-	//todo improve algorithm for searching(especially golang:keyword in title, keyword in tags, keyword in text)
-	//todo final code review
 	//todo search for remaining todos
 	//todo check for _ errors
+	//todo final code review
 }
 
 func sendJobs(jobs []sources.Job, db *sql.DB) {
