@@ -1,10 +1,10 @@
 package email
 
 import (
+	"database/sql"
 	"github.com/mailgun/mailgun-go"
 	"github.com/zuzuleinen/jobber/config"
 	"log"
-	"database/sql"
 )
 
 //Sends an HTML body e-mail

@@ -6,8 +6,8 @@ import (
 	"github.com/zuzuleinen/jobber/database"
 	"github.com/zuzuleinen/jobber/email"
 	"github.com/zuzuleinen/jobber/sources"
-	"time"
 	"sort"
+	"time"
 )
 
 type ByDateDesc []sources.Job
@@ -25,7 +25,7 @@ func (b ByDateDesc) Swap(i, j int) {
 	b[i], b[j] = b[j], b[i]
 }
 
-func SearchJobs(db *sql.DB) {
+func SearchJobs(db *sql.DB, show bool) {
 	u, err := database.FindUser(db)
 
 	if err != nil {
@@ -82,16 +82,16 @@ func SearchJobs(db *sql.DB) {
 			database.InsertOrUpdate(db, h)
 		}
 	}
-
 	if len(jobsToSend) > 0 {
+		if show {
+			fmt.Println(jobsToSend)
+		}
 		sendJobs(jobsToSend, db)
 	} else {
-		fmt.Println("no new jobs")
+		if show {
+			fmt.Println("no new jobs")
+		}
 	}
-
-	//todo search for remaining todos
-	//todo check for _ errors
-	//todo final code review
 }
 
 func sendJobs(jobs []sources.Job, db *sql.DB) {

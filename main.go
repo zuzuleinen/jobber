@@ -16,30 +16,30 @@ func main() {
 		command = os.Args[1]
 	}
 
+	show := false
+	if len(os.Args) > 2 {
+		if os.Args[2] == "--show" || os.Args[2] == "-s" {
+			show = true
+		}
+	}
+
 	switch command {
 	case "install":
-		removeDatabase()
+		database.Remove()
 		database.CreateUserTable(db)
 		database.CreateMailgunTable(db)
 		database.CreateJobHistoryTable(db)
 		commands.SaveData(db)
 		break
 	case "uninstall":
-		removeDatabase()
+		database.Remove()
 		break
 	case "search":
-		commands.SearchJobs(db)
+		commands.SearchJobs(db, show)
 		break
 	case "--help", "-h":
 		commands.Help()
 	default:
 		commands.Help()
-	}
-}
-
-func removeDatabase() {
-	err := os.Remove(database.DbPath())
-	if err != nil {
-		panic(err)
 	}
 }

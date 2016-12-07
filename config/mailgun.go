@@ -14,6 +14,6 @@ type MailGunConfig struct {
 func Config(db *sql.DB) MailGunConfig {
 	m := database.Mailgun(db)
 
-	config := MailGunConfig{Domain: m.Domain, PrivateApiKey:m.PrivKey, PublicApiKey:m.PubKey}
+	config := MailGunConfig{Domain: m.Domain, PrivateApiKey: m.PrivKey, PublicApiKey: m.PubKey}
 	return config
 }

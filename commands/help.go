@@ -6,6 +6,7 @@ func Help() {
 	doc := `
 Usage:
     jobber <command> [option]
+    jobber search -s
 
 List of commands:
   install:        Interactive project install
@@ -15,8 +16,8 @@ List of commands:
 
 Options:
   -h --help         Show this screen.
+  -s --show         Display output when using 'jobber search'
 `
 
 	fmt.Println(doc)
 }
-
