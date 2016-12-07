@@ -39,7 +39,7 @@ $ jobber
 
 ## Set up the cron job
 
-You need to set up a new cron job for jobber to run.
+You need to set up a new cron job for jobber to run. In your shell, run:
 
 ```shell
 crontab -e
