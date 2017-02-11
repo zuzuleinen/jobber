@@ -37,6 +37,21 @@ $ jobber install
 $ jobber
 ```
 
+## Set up the cron job
+
+You need to set up a new cron job for jobber to run. In your shell, run:
+
+```shell
+crontab -e
+```
+add this line(replace with your own path):
+```
+*/30 * * * * /home/andrei/Projects/bin/jobber search
+```
+
+This will make jobber search a new job for you every 30 minutes. 
+
+
 ## Usage
 
 ```shell
