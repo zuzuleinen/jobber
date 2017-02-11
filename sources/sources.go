@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"fmt"
 )
 
 type Source interface {
@@ -99,8 +100,6 @@ func (s StackOverflow) Jobs(root *html.Node, tag string) []Job {
 			NextSibling.
 			NextSibling.
 			NextSibling.
-			NextSibling.
-			NextSibling.
 			NextSibling
 
 		t := time.Now()
@@ -114,7 +113,7 @@ func (s StackOverflow) Jobs(root *html.Node, tag string) []Job {
 			jobs,
 			Job{
 				Title:     scrape.Text(title),
-				Url:       s.url + scrape.Attr(title, "href"),
+				Url:       scrape.Attr(title, "href"),
 				Tag:       tag,
 				DateAdded: t.Add(duration).Format("02 Jan 06 00:00 MST"),
 			},
